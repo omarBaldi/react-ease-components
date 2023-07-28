@@ -10,29 +10,42 @@ type ComponentForProps<T extends object> = {
   element: React.FunctionComponent<T>;
 };
 
-type NativeElement = {
+type NativeElement<T extends object> = {
   __type: 'NativeElement';
-  each: string[];
   element: keyof JSX.IntrinsicElements;
-};
+} & (
+  | {
+      each: T[];
+      propertyToRender: keyof T;
+    }
+  | {
+      each: (string | number)[];
+    }
+);
 
 function isNativeElement<T extends object>(
-  props: ComponentForProps<T> | NativeElement
-): props is NativeElement {
+  props: ComponentForProps<T> | NativeElement<T>
+): props is NativeElement<T> {
   return props.__type === 'NativeElement';
 }
 
 export default function For<T extends object>(
-  props: ComponentForProps<T> | NativeElement
+  props: ComponentForProps<T> | NativeElement<T>
 ) {
-  return isNativeElement(props)
-    ? props.each.map((el, index) => {
-        return React.createElement(props.element, {
-          key: index,
-          children: el,
-        });
-      })
-    : props.each.map((el, index) => {
-        return <props.element key={index} {...el} />;
-      });
+  if (isNativeElement(props)) {
+    return 'propertyToRender' in props
+      ? props.each.map((objElement, index) =>
+          React.createElement(props.element, {
+            key: index,
+            children: objElement[props.propertyToRender],
+          })
+        )
+      : props.each.map((el, index) =>
+          React.createElement(props.element, { key: index, children: el })
+        );
+  }
+
+  const { each, element: ElementToRender } = props;
+
+  return each.map((el, index) => <ElementToRender key={index} {...el} />);
 }
