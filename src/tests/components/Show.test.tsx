@@ -33,4 +33,18 @@ describe('Show', () => {
     const headingElement = queryByText(container, 'Hello from Show custom component');
     expect(headingElement).not.toBeInTheDocument();
   });
+
+  it.skip('should show fallback element if defined and "when" set to false', () => {
+    const { container } = render(
+      <Show when={false} fallbackElement={<div>Fallback element here</div>}>
+        <h3>Hello from Show custom component</h3>
+      </Show>
+    );
+
+    const headingElement = queryByText(container, 'Hello from Show custom component');
+    expect(headingElement).not.toBeInTheDocument();
+
+    const b = queryByText(container, 'Fallback element here');
+    expect(b).toBeInTheDocument();
+  });
 });
