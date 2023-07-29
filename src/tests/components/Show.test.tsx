@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { findAllByRole, render } from '@testing-library/react';
+import { findAllByRole, queryByText, render } from '@testing-library/react';
 import Show from '../../components/Show';
 
 describe('Show', () => {
@@ -19,5 +19,18 @@ describe('Show', () => {
     const [firstHeading, secondHeading] = headings;
     expect(firstHeading.innerText).toBe('Hello from Show custom component');
     expect(secondHeading.innerText).toBe('This is another heading');
+  });
+
+  it.skip('should not show anything if "when" is set to false', () => {
+    const { container } = render(
+      <Show when={false}>
+        <h3>Hello from Show custom component</h3>
+      </Show>
+    );
+
+    expect(container).toBeEmptyDOMElement();
+
+    const headingElement = queryByText(container, 'Hello from Show custom component');
+    expect(headingElement).not.toBeInTheDocument();
   });
 });
