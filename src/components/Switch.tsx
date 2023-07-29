@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+
+type AllowedTypes = string | boolean | number | object | unknown[];
 
 interface Case<T> {
   condition: T;
@@ -11,15 +13,36 @@ type SwitchProps<T> = {
   fallbackElement?: React.ReactNode;
 };
 
-export default function Switch<T>({
+export default function Switch<T extends AllowedTypes>({
   conditionToEvaluate,
   cases,
   fallbackElement,
 }: SwitchProps<T>) {
-  const conditionFound = cases.find(({ condition }) => condition === conditionToEvaluate);
+  const memoizedCasesRecord = useMemo(
+    () =>
+      cases.reduce((acc, { condition, elementToRender }) => {
+        /**
+         * @description
+         * Considering the fact that the object
+         * only accept the followings types
+         * "string | number | symbol" as keys, I need to make sure to identify
+         * different types other than "string" and convert them into strings.
+         */
+        const stringifiedConditionKey =
+          typeof condition === 'string' ? condition : JSON.stringify(condition);
 
-  return typeof conditionFound !== 'undefined' ? (
-    <conditionFound.elementToRender />
+        acc[stringifiedConditionKey] = elementToRender;
+        return acc;
+      }, {} as Record<string, Case<T>['elementToRender']>),
+    [cases]
+  );
+
+  const ElementToUse = memoizedCasesRecord[JSON.stringify(conditionToEvaluate)] as
+    | React.FunctionComponent
+    | undefined;
+
+  return typeof ElementToUse !== 'undefined' ? (
+    <ElementToUse />
   ) : (
     fallbackElement ?? <React.Fragment></React.Fragment>
   );
