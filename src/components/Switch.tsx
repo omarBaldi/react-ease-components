@@ -4,7 +4,7 @@ type AllowedTypes = string | boolean | number | object | unknown[];
 
 interface Case<T> {
   condition: T;
-  elementToRender: React.FunctionComponent;
+  elementToRender: React.FunctionComponent | keyof JSX.IntrinsicElements;
 }
 
 type SwitchProps<T> = {
@@ -24,14 +24,12 @@ export default function Switch<T extends AllowedTypes>({
         /**
          * @description
          * Considering the fact that the object
-         * only accept the followings types
-         * "string | number | symbol" as keys, I need to make sure to identify
-         * different types other than "string" and convert them into strings.
+         * only accept the followings types "string | number | symbol" as keys,
+         * I need to make sure to convert all of them into strings.
          */
-        const stringifiedConditionKey =
-          typeof condition === 'string' ? condition : JSON.stringify(condition);
-
+        const stringifiedConditionKey = JSON.stringify(condition);
         acc[stringifiedConditionKey] = elementToRender;
+
         return acc;
       }, {} as Record<string, Case<T>['elementToRender']>),
     [cases]
