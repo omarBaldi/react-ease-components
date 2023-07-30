@@ -21,4 +21,31 @@ describe('For', () => {
       expect(headingElement.innerText).toBe(expectedInnerText);
     });
   });
+
+  it("should render correct native DOM elements when type is set to 'NativeElement' with object array and propertyToRender", async () => {
+    const list = [
+      { title: 'First', description: 'First - description' },
+      { title: 'Second', description: 'Second - description' },
+      { title: 'Third', description: 'Third - description' },
+    ];
+
+    const propertyToRender: keyof (typeof list)[0] = 'title';
+
+    const { container } = render(
+      <For
+        __type='NativeElement'
+        each={list}
+        propertyToRender={propertyToRender}
+        element='button'
+      />
+    );
+
+    const buttonElements = await findAllByRole(container, 'button');
+    expect(buttonElements.length).toEqual(list.length);
+
+    buttonElements.forEach((buttonElement, index) => {
+      const expectedInnerText = list[index][propertyToRender];
+      expect(buttonElement.innerText).toBe(expectedInnerText);
+    });
+  });
 });
