@@ -40,4 +40,18 @@ describe('Switch', () => {
     const notFoundElement = queryByText(container, 'No element found');
     expect(notFoundElement).toBeInTheDocument();
   });
+
+  it('should not render anything if no condition matches the condition to evaluate and no fallback element is provided', () => {
+    const cases: React.ComponentProps<typeof Switch>['cases'] = [
+      { condition: 'String test #1', elementToRender: () => <h1>String test #1</h1> },
+      { condition: 'String test #2', elementToRender: () => <h1>String test #2</h1> },
+      { condition: 'String test #3', elementToRender: () => <h1>String test #3</h1> },
+    ];
+
+    const { container } = render(
+      <Switch conditionToEvaluate='String test #4' cases={cases} />
+    );
+
+    expect(container).toBeEmptyDOMElement();
+  });
 });
