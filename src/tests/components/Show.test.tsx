@@ -3,7 +3,7 @@ import { findAllByRole, queryByText, render } from '@testing-library/react';
 import Show from '../../components/Show';
 
 describe('Show', () => {
-  it.skip('should render children elements if "when" prop is set to true', async () => {
+  it('should render children elements if "when" prop is set to true', async () => {
     const { container } = render(
       <Show when={true}>
         <>
@@ -21,7 +21,7 @@ describe('Show', () => {
     expect(secondHeading.innerText).toBe('This is another heading');
   });
 
-  it.skip('should not show anything if "when" is set to false', () => {
+  it('should not show anything if "when" is set to false', () => {
     const { container } = render(
       <Show when={false}>
         <h3>Hello from Show custom component</h3>
@@ -34,7 +34,7 @@ describe('Show', () => {
     expect(headingElement).not.toBeInTheDocument();
   });
 
-  it.skip('should show fallback element if defined and "when" set to false', () => {
+  it('should show fallback element if defined and "when" set to false', () => {
     const { container } = render(
       <Show when={false} fallbackElement={<div>Fallback element here</div>}>
         <h3>Hello from Show custom component</h3>
