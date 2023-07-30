@@ -7,7 +7,7 @@ import Switch from '../../components/Switch';
  * TODO: create folder in tests called utils that render whichever component you have and return the container and other properties (DRY)
  */
 describe('Switch', () => {
-  it('should render correct React function component if condition matches the conditionToEvaluate', () => {
+  it('should render correct React function component if condition matches the condition to evaluate', () => {
     const cases: React.ComponentProps<typeof Switch>['cases'] = [
       { condition: 'String test #1', elementToRender: () => <h1>String test #1</h1> },
       { condition: 'String test #2', elementToRender: () => <h1>String test #2</h1> },
@@ -20,5 +20,24 @@ describe('Switch', () => {
 
     const headingElement = queryByText(container, 'String test #3');
     expect(headingElement).toBeInTheDocument();
+  });
+
+  it('should render correct fallback element if no condition matches the condition to evaluate', () => {
+    const cases: React.ComponentProps<typeof Switch>['cases'] = [
+      { condition: 'String test #1', elementToRender: () => <h1>String test #1</h1> },
+      { condition: 'String test #2', elementToRender: () => <h1>String test #2</h1> },
+      { condition: 'String test #3', elementToRender: () => <h1>String test #3</h1> },
+    ];
+
+    const { container } = render(
+      <Switch
+        conditionToEvaluate='String test #4'
+        cases={cases}
+        fallbackElement={<div>No element found</div>}
+      />
+    );
+
+    const notFoundElement = queryByText(container, 'No element found');
+    expect(notFoundElement).toBeInTheDocument();
   });
 });
