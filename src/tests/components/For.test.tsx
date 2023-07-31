@@ -1,4 +1,5 @@
-import { findAllByRole, render } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { findAllByRole, queryByText, render } from '@testing-library/react';
 import For from '../../components/For';
 
 function TestComponent(props: { title: string }) {
@@ -47,5 +48,64 @@ describe('For', () => {
       const expectedInnerText = list[index][propertyToRender];
       expect(buttonElement.innerText).toBe(expectedInnerText);
     });
+  });
+
+  it("should render correct nested object property into native element when type is set to 'NativeElement'", async () => {
+    const testObj = [
+      {
+        title: 'Title here',
+        description: 'description here',
+        age: 27,
+        ok: true,
+        location: {
+          born: 'Italy',
+          moved: 'Denmark',
+          anotherNestedProperty: {
+            nestedAge: 72,
+            nestedWeight: 80,
+            nestedBoolean: true,
+            nestedNickname: 'hello 1',
+          },
+        },
+      },
+      {
+        title: 'Title here 2',
+        description: 'description here 2',
+        age: 24,
+        ok: false,
+        location: {
+          born: 'Italy',
+          moved: 'None',
+          anotherNestedProperty: {
+            nestedAge: 71,
+            nestedBoolean: true,
+            nestedWeight: 81,
+            nestedNickname: 'hello 2',
+          },
+        },
+      },
+    ];
+
+    const { container } = render(
+      <For
+        __type='NativeElement'
+        each={testObj}
+        propertyToRender='location.anotherNestedProperty.nestedNickname'
+        element='div'
+      />
+    );
+
+    const firstNicknameElement = queryByText(
+      container,
+      testObj[0].location.anotherNestedProperty.nestedNickname
+    );
+
+    const secondNicknameElement = queryByText(
+      container,
+      testObj[1].location.anotherNestedProperty.nestedNickname
+    );
+
+    expect(firstNicknameElement).toBeInTheDocument();
+    expect(secondNicknameElement).toBeInTheDocument();
   });
 });
