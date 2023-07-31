@@ -10,13 +10,23 @@ type FunctionComponent<T extends object> = {
   element: React.FunctionComponent<T>;
 };
 
+type RecursiveObjectProperties<T> = T extends object
+  ? {
+      [P in keyof T]-?: T[P] extends string | number
+        ? P
+        : T[P] extends object
+        ? `${string & P}.${string & RecursiveObjectProperties<T[P]>}`
+        : never;
+    }[keyof T]
+  : never;
+
 type NativeElement<T extends object> = {
   __type: 'NativeElement';
   element: keyof JSX.IntrinsicElements;
 } & (
   | {
       each: T[];
-      propertyToRender: keyof T;
+      propertyToRender: RecursiveObjectProperties<T>;
     }
   | {
       each: (string | number)[];
@@ -37,7 +47,10 @@ export default function For<T extends object>(
       ? props.each.map((objElement, index) => {
           return React.createElement(props.element, {
             key: `native-element-obj-#${index}`,
-            children: objElement[props.propertyToRender],
+            /**
+             * TODO: to fix
+             */
+            children: '',
           });
         })
       : props.each.map((el, index) =>
