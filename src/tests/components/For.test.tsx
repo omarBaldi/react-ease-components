@@ -6,11 +6,11 @@ function TestComponent(props: { title: string }) {
 }
 
 describe('For', () => {
-  it("should render React function components if type is set to 'ComponentForProps'", async () => {
+  it("should render React function components if type is set to 'FunctionComponent'", async () => {
     const list = [{ title: 'First' }, { title: 'Second' }, { title: 'Third' }];
 
     const { container } = render(
-      <For __type='ComponentForProps' each={list} element={TestComponent} />
+      <For __type='FunctionComponent' each={list} element={TestComponent} />
     );
 
     const headingsElements = await findAllByRole(container, 'heading');
