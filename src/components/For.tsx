@@ -33,6 +33,18 @@ type NativeElement<T extends object> = {
     }
 );
 
+function getRecursiveObjectValueFromProperty<T>(obj: T, properties: string) {
+  const splitProperties = properties.split('.') as (keyof T)[];
+  const [firstProperty, ...rest] = splitProperties;
+  const value = obj[firstProperty];
+
+  if (typeof value === 'object') {
+    return getRecursiveObjectValueFromProperty(value, [...rest].join('.'));
+  }
+
+  return value;
+}
+
 function isNativeElement<T extends object>(
   props: FunctionComponent<T> | NativeElement<T>
 ): props is NativeElement<T> {
@@ -45,12 +57,14 @@ export default function For<T extends object>(
   if (isNativeElement(props)) {
     return 'propertyToRender' in props
       ? props.each.map((objElement, index) => {
+          const nestedObjectValue = getRecursiveObjectValueFromProperty(
+            objElement,
+            props.propertyToRender as string
+          );
+
           return React.createElement(props.element, {
             key: `native-element-obj-#${index}`,
-            /**
-             * TODO: to fix
-             */
-            children: '',
+            children: nestedObjectValue,
           });
         })
       : props.each.map((el, index) =>
