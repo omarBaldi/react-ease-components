@@ -64,7 +64,7 @@ describe('For', () => {
             nestedAge: 72,
             nestedWeight: 80,
             nestedBoolean: true,
-            nestedNickname: 'hello 1',
+            nestedNickname: 'nickname 1',
           },
         },
       },
@@ -80,7 +80,7 @@ describe('For', () => {
             nestedAge: 71,
             nestedBoolean: true,
             nestedWeight: 81,
-            nestedNickname: 'hello 2',
+            nestedNickname: 'nickname 2',
           },
         },
       },
@@ -95,17 +95,15 @@ describe('For', () => {
       />
     );
 
-    const firstNicknameElement = queryByText(
-      container,
-      testObj[0].location.anotherNestedProperty.nestedNickname
-    );
+    const elements = [...Array(testObj.length)].map((_, index) => {
+      return queryByText(
+        container,
+        testObj[index].location.anotherNestedProperty.nestedNickname
+      );
+    });
 
-    const secondNicknameElement = queryByText(
-      container,
-      testObj[1].location.anotherNestedProperty.nestedNickname
-    );
-
-    expect(firstNicknameElement).toBeInTheDocument();
-    expect(secondNicknameElement).toBeInTheDocument();
+    for (const element of elements) {
+      expect(element).toBeInTheDocument();
+    }
   });
 });
